@@ -101,18 +101,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Terminal cursor effect for buttons
-    const terminalButtons = document.querySelectorAll('.terminal-button');
-    terminalButtons.forEach(button => {
-        button.addEventListener('mouseenter', function() {
-            if (!this.textContent.includes('_')) {
-                this.textContent += '_';
-            }
-        });
-        button.addEventListener('mouseleave', function() {
-            this.textContent = this.textContent.replace('_', '');
-        });
-    });
+    // Terminal cursor effect for buttons - disabled to preserve underscores in button text
+    // The hover effects are handled by CSS instead
 
     // Add typing effect to status bar
     const statusBar = document.querySelector('.status-bar');
