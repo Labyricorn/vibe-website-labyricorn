@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ project.title }} - Labyricorn Vibe Hub{% endblock %}
+
+{% block content %}
+<article class="max-w-4xl mx-auto">
+    <!-- Project Header -->
+    <header class="mb-8" style="padding: 2rem; background-color: rgba(15, 20, 32, 0.5); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 0.5rem; box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);">
+        <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 0.05em; background: linear-gradient(90deg, #8b5cf6, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+            {{ project.title }}
+        </h1>
+
+        <div class="flex items-center text-sm space-x-4 mb-6" style="color: #6b7280; font-family: 'Courier New', monospace;">
+            <time datetime="{{ project.created_at|date:'Y-m-d' }}">
+                <span style="color: #8b5cf6;">[</span>CREATED: {{ project.created_at|date:"Y.m.d" }}<span style="color: #8b5cf6;">]</span>
+            </time>
+            {% if project.updated_at != project.created_at %}
+            <span style="color: #8b5cf6;">|</span>
+            <span><span style="color: #8b5cf6;">[</span>UPDATED: {{ project.updated_at|date:"Y.m.d" }}<span style="color: #8b5cf6;">]</span></span>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Project Description -->
+    <div style="padding: 2rem; background-color: rgba(15, 20, 32, 0.3); border: 1px solid rgba(6, 182, 212, 0.2); border-radius: 0.5rem; margin-bottom: 3rem;">
+        <p style="font-size: 1.125rem; color: #9ca3af; line-height: 1.75;">
+            <span style="color: #8b5cf6;">&gt;&gt;</span> {{ project.description }}
+        </p>
+    </div>
+
+    <!-- Related Devlogs -->
+    {% if related_devlogs %}
+    <section style="border-top: 1px solid rgba(6, 182, 212, 0.3); padding-top: 2rem;">
+        <h2 style="font-size: 1.875rem; font-weight: 700; margin-bottom: 1.5rem; color: #06b6d4; text-transform: uppercase; letter-spacing: 0.05em;">
+            <span style="color: #8b5cf6;">&gt;&gt;</span> RELATED_DEVLOGS
+        </h2>
+
+        <div class="space-y-6">
+            {% for devlog in related_devlogs %}
+            <article class="card">
+                <h3 class="card-title text-xl">
+                    <a href="{% url 'devlog_detail' devlog.slug %}">
+                        {{ devlog.title }}
+                    </a>
+                </h3>
+                <p style="color: #9ca3af; margin-bottom: 0.75rem;">{{ devlog.tagline }}</p>
+                <div class="flex items-center text-sm" style="color: #6b7280; font-family: 'Courier New', monospace;">
+                    <time datetime="{{ devlog.created_at|date:'Y-m-d' }}">
+                        <span style="color: #8b5cf6;">[</span>{{ devlog.created_at|date:"Y.m.d" }}<span style="color: #8b5cf6;">]</span>
+                    </time>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+    {% else %}
+    <section style="border-top: 1px solid rgba(6, 182, 212, 0.3); padding-top: 2rem;">
+        <p style="color: #9ca3af; font-style: italic;">
+            <span style="color: #8b5cf6;">&gt;</span> NO_DEVLOGS_PUBLISHED_FOR_THIS_PROJECT_YET
+        </p>
+    </section>
+    {% endif %}
+
+    <!-- Back Link -->
+    <div style="border-top: 1px solid rgba(6, 182, 212, 0.3); padding-top: 2rem; margin-top: 2rem;">
+        <a href="{% url 'home' %}" class="terminal-button" style="display: inline-block; padding: 0.75rem 1.5rem;">
+            <span style="color: #8b5cf6;">&lt;</span> RETURN_TO_HOME
+        </a>
+    </div>
+</article>
+{% endblock %}

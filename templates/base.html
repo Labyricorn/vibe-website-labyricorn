@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Vibe Coding & SysAdmin Hub{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <nav class="sticky top-0 z-50" style="background-color: rgba(10, 14, 26, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(6, 182, 212, 0.3); box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="{% url 'home' %}" style="font-size: 1.25rem; font-weight: 700; color: #06b6d4; text-transform: uppercase; letter-spacing: 0.1em; transition: all 0.3s;">
+                            <span style="color: #8b5cf6;">[</span>LABYRICORN_VIBE_HUB<span style="color: #8b5cf6;">]</span>
+                        </a>
+                    </div>
+                    <div class="hidden md:ml-6 md:flex md:space-x-8 desktop-nav">
+                        <a href="{% url 'home' %}" class="nav-link inline-flex items-center px-1 pt-1 text-sm font-medium">
+                            HOME
+                        </a>
+                    </div>
+                </div>
+                <div class="hidden md:flex md:items-center desktop-nav">
+                    <a href="{% url 'rss_feed' %}" class="terminal-button" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                        ACCESS_RSS
+                    </a>
+                </div>
+                <div class="flex items-center md:hidden">
+                    <button id="mobile-menu-button" type="button" class="mobile-menu-button inline-flex items-center justify-center p-2 rounded-md" style="color: #06b6d4; border: 1px solid rgba(6, 182, 212, 0.3);" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden mobile-nav" style="background-color: rgba(15, 20, 32, 0.98); border-top: 1px solid rgba(6, 182, 212, 0.2);">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="{% url 'home' %}" class="block px-3 py-2 rounded-md text-base font-medium" style="color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em;">
+                    HOME
+                </a>
+                <a href="{% url 'rss_feed' %}" class="block px-3 py-2 rounded-md text-base font-medium" style="color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em;">
+                    RSS FEED
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="status-bar mt-12" style="background-color: rgba(10, 14, 26, 0.95); border-top: 1px solid rgba(6, 182, 212, 0.3); padding: 1.5rem 0;">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap justify-between items-center text-sm" style="font-family: 'Courier New', monospace;">
+                <div style="color: #9ca3af;">
+                    <span style="color: #8b5cf6;">&gt;</span> PLATFORM_ <span style="color: #06b6d4;">VIBE_HUB</span>
+                </div>
+                <div style="color: #9ca3af;">
+                    <span style="color: #8b5cf6;">&gt;</span> SYS_VERSION: <span style="color: #06b6d4;">1.0.0</span>
+                </div>
+                <div style="color: #9ca3af;">
+                    <span style="color: #8b5cf6;">&gt;</span> STATUS: <span style="color: #14b8a6;">ONLINE</span>
+                </div>
+                <div style="color: #9ca3af;">
+                    <span style="color: #8b5cf6;">&gt;</span> &copy; {% now "Y" %}
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

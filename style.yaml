@@ -1,0 +1,42 @@
+web_style_summary:
+  theme:
+    name: "Cyberpunk / Retro-Tech Terminal"
+    primary_color: "Deep Black/Dark Navy"
+    secondary_color: "Dark Purple/Violet"
+    accent_color: "Bright Cyan/Teal"
+    text_color: "White/Light Gray"
+    font_style: "Monospaced, Pixelated, or Glitchy (for main titles)"
+  
+  typography:
+    titles:
+      style: "Large, bold, uppercase, often with a vibrant gradient (e.g., purple to cyan)."
+      effect: "Subtle scanlines or digital distortion/glitch effect."
+    body_text:
+      style: "Standard monospaced font, smaller size, often prefixed with symbols like '>' or '>>'."
+      color: "White or light cyan."
+  
+  layout_and_elements:
+    background:
+      texture: "Dark background with a subtle, faint grid pattern (like a graph paper or CRT screen)."
+      lighting: "Dark overall tone with centralized, glowing light from text/elements."
+    
+    navigation:
+      style: "Minimalist, uppercase text links separated by underscores or simple dividers."
+      highlight: "Cyan text color, possibly with a glowing effect."
+      terminal_button: "Prominent button in the top right labeled 'ACCESS_TERMINAL' with a distinct box border."
+    
+    call_to_action:
+      style: "Buttons styled as terminal input boxes/prompts, using clear rectangular borders with the accent color."
+      example_text: "INITIALIZE SEQUENCE_", "EXPLORE THE GRID"
+    
+    footer/status_bar:
+      style: "Minimalistic line-based display showing system status, version numbers, uptime, etc., using monospaced text and symbols."
+      example_content: "> PLATFORM_", "SYS_VERSION: X.X.X", "QUANTUM STATE: STABLE"
+    
+    interactive_elements:
+      chat_widget: "Appears in the bottom right, styled minimally with dark background and small actionable buttons ('Start', settings icon)."
+  
+  design_principles:
+    - "High contrast between dark background and bright accents."
+    - "Heavy use of monospaced fonts and computer syntax conventions (underscores, brackets, hex codes)."
+    - "Atmosphere driven by glowing text and subtle visual noise (scanlines/grain)."
