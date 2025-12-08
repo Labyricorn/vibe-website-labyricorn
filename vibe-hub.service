@@ -1,0 +1,25 @@
+[Unit]
+Description=Labyricorn Vibe Hub Gunicorn Service
+After=network.target
+
+[Service]
+Type=notify
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/vibe-hub
+Environment="PATH=/opt/vibe-hub/vibe-hub-mvp/bin"
+ExecStart=/opt/vibe-hub/vibe-hub-mvp/bin/gunicorn \
+    --workers 3 \
+    --bind 127.0.0.1:8000 \
+    --timeout 60 \
+    --access-logfile /var/log/vibe-hub/access.log \
+    --error-logfile /var/log/vibe-hub/error.log \
+    vibe_hub.wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
