@@ -7,15 +7,15 @@ tunnel: <your-tunnel-id>
 # Replace with your tunnel credentials file path
 credentials-file: /home/<user>/.cloudflared/<tunnel-id>.json
 
-# Ingress rules - routes traffic from your domain to local services
+# Ingress rules - routes traffic from your domain to nginx (not Django directly)
 ingress:
-  # Route your primary domain to Gunicorn
+  # Route your primary domain to nginx (which serves static files and proxies Django)
   - hostname: your-domain.com
-    service: http://127.0.0.1:8000
+    service: http://127.0.0.1:80
   
-  # Route www subdomain to Gunicorn
+  # Route www subdomain to nginx
   - hostname: www.your-domain.com
-    service: http://127.0.0.1:8000
+    service: http://127.0.0.1:80
   
   # Catch-all rule (required) - returns 404 for unmatched requests
   - service: http_status:404

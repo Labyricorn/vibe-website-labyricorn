@@ -53,18 +53,69 @@ sudo systemctl start vibe-hub
 ### `cloudflared-config.example.yml`
 **Purpose**: Cloudflare Tunnel configuration template  
 **Location**: Project root (copy to `~/.cloudflared/config.yml`)  
-**Usage**: Routes traffic from Cloudflare to local Gunicorn
+**Usage**: Routes traffic from Cloudflare to nginx (not directly to Django)
 
 Configuration:
 - Tunnel ID and credentials
-- Ingress rules for domain routing
+- Ingress rules pointing to nginx (port 80)
 - Logging and connection settings
 
 Installation:
 ```bash
 cp cloudflared-config.example.yml ~/.cloudflared/config.yml
-# Edit with your tunnel ID and domain
+# Edit with your tunnel ID and domain (point to port 80)
 nano ~/.cloudflared/config.yml
+```
+
+## Nginx Configuration Files
+
+### `deployment/nginx.conf`
+**Purpose**: Nginx server configuration for reverse proxy and static file serving  
+**Location**: `deployment/` directory (copy to `/etc/nginx/sites-available/`)  
+**Usage**: Serves static files directly and proxies Django requests to Gunicorn
+
+Configuration:
+- Listens on port 80
+- Serves static files from `/var/www/static/`
+- Proxies dynamic requests to Gunicorn (127.0.0.1:8000)
+- Includes security headers and caching
+
+Installation:
+```bash
+sudo cp deployment/nginx.conf /etc/nginx/sites-available/vibe-hub
+sudo ln -s /etc/nginx/sites-available/vibe-hub /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+### `deployment/setup_nginx.sh`
+**Purpose**: Automated nginx installation and configuration script  
+**Location**: `deployment/` directory  
+**Usage**: Sets up nginx with proper configuration and directories
+
+Features:
+- Installs nginx if not present
+- Creates static file directories
+- Configures nginx site
+- Sets proper permissions
+
+Usage:
+```bash
+sudo bash deployment/setup_nginx.sh
+```
+
+### `deployment/deploy_static.sh`
+**Purpose**: Static file deployment script  
+**Location**: `deployment/` directory  
+**Usage**: Collects and deploys static files to nginx directory
+
+Features:
+- Collects Django static files
+- Copies to nginx directory (/var/www/static/)
+- Sets proper permissions
+
+Usage:
+```bash
+bash deployment/deploy_static.sh
 ```
 
 ## Documentation Files
@@ -146,9 +197,11 @@ Features:
 ### Production Deployment
 1. `requirements.txt` → Install on server
 2. `.env.example` → Configure production `.env`
-3. `vibe-hub.service` → Set up Gunicorn service
-4. `cloudflared-config.example.yml` → Configure tunnel
-5. `DEPLOYMENT.md` → Follow checklist
+3. `deployment/setup_nginx.sh` → Configure nginx
+4. `deployment/deploy_static.sh` → Deploy static files
+5. `vibe-hub.service` → Set up Gunicorn service
+6. `cloudflared-config.example.yml` → Configure tunnel (point to port 80)
+7. `DEPLOYMENT.md` → Follow checklist
 
 ### Ongoing Maintenance
 1. `deploy.sh` or `deploy.bat` → Run updates
@@ -175,28 +228,35 @@ python manage.py test
 # Install dependencies
 pip install -r requirements.txt
 
+# Configure nginx
+sudo bash deployment/setup_nginx.sh
+
 # Run migrations
 python manage.py migrate
 
-# Collect static files
-python manage.py collectstatic --noinput
+# Deploy static files to nginx
+bash deployment/deploy_static.sh
 
-# Restart service
+# Restart services
 sudo systemctl restart vibe-hub
+sudo systemctl restart nginx
 ```
 
 ### Service Management
 ```bash
 # Check service status
 sudo systemctl status vibe-hub
+sudo systemctl status nginx
 sudo systemctl status cloudflared
 
 # View logs
 sudo journalctl -u vibe-hub -f
+sudo journalctl -u nginx -f
 sudo journalctl -u cloudflared -f
 
 # Restart services
 sudo systemctl restart vibe-hub
+sudo systemctl restart nginx
 sudo systemctl restart cloudflared
 ```
 

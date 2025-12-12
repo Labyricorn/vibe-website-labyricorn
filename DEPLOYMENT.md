@@ -19,8 +19,8 @@ This document provides a step-by-step checklist for deploying the Labyricorn Vib
 # Update system packages
 sudo apt update && sudo apt upgrade -y
 
-# Install required system packages
-sudo apt install python3 python3-pip python3-venv git -y
+# Install required system packages (including nginx)
+sudo apt install python3 python3-pip python3-venv git nginx -y
 
 # Create application directory
 sudo mkdir -p /opt/vibe-hub
@@ -30,6 +30,7 @@ sudo chown $USER:$USER /opt/vibe-hub
 - [X ] System packages updated
 - [X ] Python 3.10+ installed
 - [ X] Git installed
+- [X ] Nginx installed
 - [ X] Application directory created
 
 ### 2. Application Setup
@@ -105,7 +106,21 @@ python manage.py collectstatic --noinput
 - [ X] Superuser created
 - [X] Static files collected
 
-### 5. Gunicorn Service Setup
+### 5. Nginx Configuration
+
+```bash
+# Run nginx setup script
+sudo bash deployment/setup_nginx.sh
+
+# Deploy static files to nginx directory
+bash deployment/deploy_static.sh
+```
+
+- [X] Nginx configured with reverse proxy
+- [X] Static files deployed to /var/www/static/
+- [X] Proper permissions set
+
+### 6. Gunicorn Service Setup
 
 ```bash
 # Copy service file
@@ -132,7 +147,7 @@ sudo systemctl status vibe-hub
 - [X ] Service enabled
 - [X ] Service started successfully
 
-### 6. Cloudflare Tunnel Setup
+### 7. Cloudflare Tunnel Setup
 
 ```bash
 # Install cloudflared
@@ -153,7 +168,7 @@ cloudflared tunnel create vibe-hub
 - [ ] Tunnel created
 - [ ] Tunnel ID recorded
 
-### 7. Tunnel Configuration
+### 8. Tunnel Configuration
 
 ```bash
 # Create config directory
@@ -164,7 +179,20 @@ cp cloudflared-config.example.yml ~/.cloudflared/config.yml
 nano ~/.cloudflared/config.yml
 ```
 
-Update with your tunnel ID and credentials path.
+Update with your tunnel ID and credentials path. **Important**: Point to nginx (port 80), not Django directly:
+
+```yaml
+# ~/.cloudflared/config.yml
+tunnel: <your-tunnel-id>
+credentials-file: /home/<user>/.cloudflared/<tunnel-id>.json
+
+ingress:
+  - hostname: your-domain.com
+    service: http://127.0.0.1:80  # Point to nginx, not Django
+  - hostname: www.your-domain.com
+    service: http://127.0.0.1:80  # Point to nginx, not Django
+  - service: http_status:404
+```
 
 ```bash
 # Configure DNS
@@ -178,32 +206,41 @@ sudo systemctl enable cloudflared
 sudo systemctl status cloudflared
 ```
 
-- [ ] Tunnel config created
+- [ ] Tunnel config created (pointing to nginx port 80)
 - [ ] DNS records configured
 - [ ] Tunnel service installed
 - [ ] Tunnel service started
 
 ## Post-Deployment Verification
 
-### 8. Testing
+### 9. Testing
 
 ```bash
 # Check Gunicorn service
 sudo systemctl status vibe-hub
+
+# Check Nginx service
+sudo systemctl status nginx
 
 # Check Cloudflare tunnel
 sudo systemctl status cloudflared
 
 # View logs
 sudo journalctl -u vibe-hub -n 50
+sudo journalctl -u nginx -n 50
 sudo journalctl -u cloudflared -n 50
+
+# Test nginx configuration
+sudo nginx -t
 ```
 
-- [ ] Gunicorn service running
-- [ ] Cloudflare tunnel running
+- [ ] Gunicorn service running (bound to 127.0.0.1:8000)
+- [ ] Nginx service running (listening on port 80)
+- [ ] Cloudflare tunnel running (pointing to port 80)
 - [ ] No errors in logs
+- [ ] Nginx configuration valid
 
-### 9. Website Verification
+### 10. Website Verification
 
 Visit your domain and verify:
 
@@ -218,7 +255,7 @@ Visit your domain and verify:
 - [ ] RSS feed accessible at `/rss/`
 - [ ] HTTPS working (via Cloudflare)
 
-### 10. Security Verification
+### 11. Security Verification
 
 - [ ] Admin requires authentication
 - [ ] HTTPS redirect working
@@ -229,7 +266,7 @@ Visit your domain and verify:
 
 ## Backup Setup
 
-### 11. Configure Automated Backups
+### 12. Configure Automated Backups
 
 ```bash
 # Create backup directory
@@ -250,7 +287,7 @@ Add this line:
 
 ## Monitoring Setup
 
-### 12. Log Monitoring
+### 13. Log Monitoring
 
 ```bash
 # Check log rotation
@@ -330,8 +367,17 @@ sudo journalctl -u vibe-hub -n 50
 
 **Static files not loading:**
 ```bash
-python manage.py collectstatic --noinput --clear
-sudo systemctl restart vibe-hub
+# Redeploy static files
+bash deployment/deploy_static.sh
+
+# Check nginx configuration
+sudo nginx -t
+
+# Restart nginx
+sudo systemctl restart nginx
+
+# Check static files exist
+ls -la /var/www/static/
 ```
 
 **Database errors:**
