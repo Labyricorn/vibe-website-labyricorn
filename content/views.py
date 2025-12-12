@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.urls import reverse
+from django.db.models import Q, Prefetch
 import markdown
 from feedgen.feed import FeedGenerator
 from .models import Devlog, Project
@@ -51,6 +52,40 @@ def project_detail(request, slug):
         'related_devlogs': related_devlogs,
     }
     return render(request, 'project_detail.html', context)
+
+
+def explore_grid(request):
+    """
+    Displays featured projects with their associated devlogs and search functionality.
+    Projects are ordered from newest to oldest, with devlogs ordered newest to oldest.
+    """
+    search_query = request.GET.get('search', '').strip()
+    
+    # Get featured projects with their published devlogs
+    projects_queryset = Project.objects.filter(is_featured=True).prefetch_related(
+        Prefetch(
+            'devlogs',
+            queryset=Devlog.objects.filter(is_published=True).order_by('-created_at'),
+            to_attr='published_devlogs'
+        )
+    ).order_by('-created_at')
+    
+    # Apply search filter if provided
+    if search_query:
+        projects_queryset = projects_queryset.filter(
+            Q(title__icontains=search_query) |
+            Q(description__icontains=search_query) |
+            Q(devlogs__title__icontains=search_query) |
+            Q(devlogs__tagline__icontains=search_query)
+        ).distinct()
+    
+    projects = projects_queryset
+    
+    context = {
+        'projects': projects,
+        'search_query': search_query,
+    }
+    return render(request, 'explore_grid.html', context)
 
 
 def rss_feed(request):

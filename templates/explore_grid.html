@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Explore the Grid - Labyricorn Vibe Hub{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Header Section -->
+    <div class="text-center" style="padding: 2rem 0;">
+        <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.1em; background: linear-gradient(90deg, #8b5cf6, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+            EXPLORE_THE_GRID
+        </h1>
+        <p style="font-size: 1.125rem; color: #9ca3af; font-family: 'Courier New', monospace;">
+            <span style="color: #8b5cf6;">&gt;&gt;</span> FEATURED_PROJECTS <span style="color: #06b6d4;">|</span> DEVELOPMENT_LOGS
+        </p>
+    </div>
+
+    <!-- Search Section -->
+    <div class="max-w-2xl mx-auto">
+        <form method="GET" class="relative">
+            <div style="position: relative;">
+                <input 
+                    type="text" 
+                    name="search" 
+                    value="{{ search_query }}" 
+                    placeholder="Search projects and devlogs..."
+                    style="width: 100%; padding: 1rem 3rem 1rem 1rem; background-color: rgba(15, 20, 32, 0.5); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 0.5rem; color: #9ca3af; font-family: 'Courier New', monospace; font-size: 1rem; transition: all 0.3s;"
+                    onfocus="this.style.borderColor='rgba(6, 182, 212, 0.6)'; this.style.boxShadow='0 0 20px rgba(139, 92, 246, 0.3)'"
+                    onblur="this.style.borderColor='rgba(6, 182, 212, 0.3)'; this.style.boxShadow='none'"
+                >
+                <button 
+                    type="submit" 
+                    style="position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: #06b6d4; cursor: pointer; font-size: 1.25rem; transition: all 0.2s;"
+                    onmouseover="this.style.color='#8b5cf6'"
+                    onmouseout="this.style.color='#06b6d4'"
+                >
+                    >Search
+                </button>
+            </div>
+        </form>
+        {% if search_query %}
+        <div style="margin-top: 1rem; text-align: center; color: #9ca3af; font-family: 'Courier New', monospace;">
+            <span style="color: #8b5cf6;">[</span>SEARCH_RESULTS_FOR: "{{ search_query }}"<span style="color: #8b5cf6;">]</span>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Projects Grid -->
+    {% if projects %}
+    <div class="space-y-12">
+        {% for project in projects %}
+        <div class="project-section" style="border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 0.75rem; padding: 2rem; background-color: rgba(15, 20, 32, 0.3); box-shadow: 0 0 20px rgba(139, 92, 246, 0.1);">
+            <!-- Project Header -->
+            <div class="project-header" style="margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(6, 182, 212, 0.2);">
+                <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; background: linear-gradient(90deg, #8b5cf6, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    <span style="color: #8b5cf6;">&gt;</span> 
+                    <a href="{% url 'project_detail' project.slug %}" style="text-decoration: none;">
+                        {{ project.title }}
+                    </a>
+                </h2>
+                <p style="color: #9ca3af; font-size: 1.125rem; line-height: 1.6; margin-bottom: 1rem;">
+                    {{ project.description }}
+                </p>
+                <div class="flex items-center text-sm" style="color: #6b7280; font-family: 'Courier New', monospace;">
+                    <span><span style="color: #8b5cf6;">[</span>CREATED: {{ project.created_at|date:"Y.m.d" }}<span style="color: #8b5cf6;">]</span></span>
+                    {% if project.updated_at != project.created_at %}
+                    <span style="color: #8b5cf6; margin: 0 0.5rem;">|</span>
+                    <span><span style="color: #8b5cf6;">[</span>UPDATED: {{ project.updated_at|date:"Y.m.d" }}<span style="color: #8b5cf6;">]</span></span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Associated Devlogs -->
+            {% if project.published_devlogs %}
+            <div class="devlogs-section">
+                <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: #06b6d4; text-transform: uppercase; letter-spacing: 0.05em;">
+                    <span style="color: #8b5cf6;">&gt;&gt;</span> ASSOCIATED_DEVLOGS
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {% for devlog in project.published_devlogs %}
+                    <div class="devlog-card" style="padding: 1.5rem; background-color: rgba(10, 14, 26, 0.5); border: 1px solid rgba(6, 182, 212, 0.2); border-radius: 0.5rem; transition: all 0.3s;"
+                         onmouseover="this.style.borderColor='rgba(6, 182, 212, 0.5)'; this.style.boxShadow='0 0 15px rgba(139, 92, 246, 0.2)'"
+                         onmouseout="this.style.borderColor='rgba(6, 182, 212, 0.2)'; this.style.boxShadow='none'">
+                        <h4 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem; color: #06b6d4;">
+                            <a href="{% url 'devlog_detail' devlog.slug %}" style="text-decoration: none; transition: all 0.2s;"
+                               onmouseover="this.style.color='#8b5cf6'"
+                               onmouseout="this.style.color='#06b6d4'">
+                                <span style="color: #8b5cf6;">&gt;</span> {{ devlog.title }}
+                            </a>
+                        </h4>
+                        <p style="color: #9ca3af; font-size: 0.875rem; line-height: 1.5; margin-bottom: 1rem;">
+                            {{ devlog.tagline }}
+                        </p>
+                        <div style="color: #6b7280; font-size: 0.75rem; font-family: 'Courier New', monospace;">
+                            <span style="color: #8b5cf6;">[</span>{{ devlog.created_at|date:"Y.m.d" }}<span style="color: #8b5cf6;">]</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <div class="no-devlogs" style="text-align: center; padding: 2rem; color: #6b7280; font-style: italic;">
+                <span style="color: #8b5cf6;">&gt;</span> NO_DEVLOGS_PUBLISHED_FOR_THIS_PROJECT_YET
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-results" style="text-align: center; padding: 4rem; color: #6b7280;">
+        {% if search_query %}
+        <p style="font-size: 1.25rem; margin-bottom: 1rem;">
+            <span style="color: #8b5cf6;">&gt;</span> NO_PROJECTS_FOUND_FOR_SEARCH_QUERY
+        </p>
+        <p style="color: #9ca3af;">
+            Try adjusting your search terms or <a href="{% url 'explore_grid' %}" style="color: #06b6d4; text-decoration: none;">view all projects</a>
+        </p>
+        {% else %}
+        <p style="font-size: 1.25rem;">
+            <span style="color: #8b5cf6;">&gt;</span> NO_FEATURED_PROJECTS_AVAILABLE_YET
+        </p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Back to Home -->
+    <div style="text-align: center; border-top: 1px solid rgba(6, 182, 212, 0.3); padding-top: 2rem; margin-top: 3rem;">
+        <a href="{% url 'home' %}" class="terminal-button" style="display: inline-block; padding: 0.75rem 1.5rem;">
+            <span style="color: #8b5cf6;">&lt;</span> RETURN_TO_HOME
+        </a>
+    </div>
+</div>
+{% endblock %}
